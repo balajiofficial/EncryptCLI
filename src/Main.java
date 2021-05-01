@@ -9,6 +9,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter 1 for encryption or 2 for decryption : ");
         String num = scanner.nextLine();
+        String key = generateRandomKey();
         if (num.equals("1")) {
             System.out.print("Enter the name of the file to be encrypted : ");
             String file = scanner.nextLine();
@@ -65,5 +66,13 @@ public class Main {
             reader.close();
             System.out.println("Decrypted at " + newFile);
         }
+    }
+
+    public static String generateRandomKey() {
+        StringBuilder key = new StringBuilder();
+        for (int i = 0; i < 15; ++i) {
+            key.append(Math.round(Math.random() * 93 + 33));
+        }
+        return key.toString();
     }
 }
