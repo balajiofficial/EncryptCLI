@@ -1,10 +1,12 @@
 # EncryptCLI
 
-<img src="./images/banner.png" alt="Banner" height="150">
+<div align="center">
+  <img src="./images/banner.png" alt="Banner" height="150">
+</div>
 
 ## About
-EncryptCLI is a CLI Tool for encrypting documents and source codes. It is registered under the MIT License.
-It can encrypt files with ASCII characters.
+EncryptCLI is a CLI Tool for encrypting documents and source codes.
+It can encrypt files with ASCII Characters.
 
 ## Downloads
 - Main.class file - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/2.0.0/Main.class)
