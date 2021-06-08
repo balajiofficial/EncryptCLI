@@ -33,7 +33,7 @@ public class Main {
                 data = reader.read();
                 j = ++j % 15;
             }
-            String newFile = "EncryptCLI." + file.substring(file.indexOf('.') + 1);
+            String newFile = file + " - Encrypted." + file.substring(file.indexOf('.') + 1);
             reader.close();
             FileWriter writer = new FileWriter(newFile);
             writer.write(str.toString());
@@ -83,7 +83,7 @@ public class Main {
                 data = (char)temp;
             }
             str.append(te);
-            String newFile = "DecryptCLI." + file.substring(file.indexOf('.') + 1);
+            String newFile = file.replaceFirst(" - Encrypted.cpp", "") + " - Decrypted." + file.substring(file.lastIndexOf('.') + 1);
             FileWriter writer = new FileWriter(newFile);
             writer.write(str.toString());
             writer.close();
