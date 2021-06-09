@@ -83,7 +83,7 @@ public class Main {
                 data = (char)temp;
             }
             str.append(te);
-            String newFile = file.replaceFirst(" - Encrypted.cpp", "") + " - Decrypted." + file.substring(file.lastIndexOf('.') + 1);
+            String newFile = file.replaceFirst((" - Encrypted." + file.substring(file.lastIndexOf('.') + 1)), "") + " - Decrypted." + file.substring(file.lastIndexOf('.') + 1);
             FileWriter writer = new FileWriter(newFile);
             writer.write(str.toString());
             writer.close();
