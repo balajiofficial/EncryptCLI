@@ -9,19 +9,21 @@ EncryptCLI is a CLI Tool for encrypting documents and source codes.
 It can encrypt files with ASCII Characters.
 
 ## Downloads
-- Main.class file - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/2.0.0/Main.class)
+- Windows 10 64-bit - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/3.0.0/EncryptCLI_Setup.exe)
 
-## Setup
-1. Install JDK.
-2. Add bin folder of JDK to path.
-3. Download [Main.class](https://github.com/K-Balaji/EncryptCLI/releases/download/2.0.0/Main.class)
-4. Open the terminal and enter this - 
+## Test Locally
+1. Install [Go](https://golang.org/).
+2. Download this [ZIP Folder](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/3.0.0.zip) or this [tar.gz File](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/3.0.0.tar.gz).
+3. Extract it to a directory of your choice.
+2. Open the terminal, navigate to that directory and enter this - 
 ```
-java Main
+cd src
+go run main.go
 ```
 
 ## Technologies Used
-- Java
+- [Go](https://golang.org/)
+- [Go Standard Library](https://pkg.go.dev/std)
 
 ## Future Plans
 - Fix bugs (if any)
