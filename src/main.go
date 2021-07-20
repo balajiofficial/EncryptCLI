@@ -1,14 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"math/rand"
 	"os"
 	"strconv"
 )
-
-var fileName string
-var num int
 
 func generateRandomKey() string {
 	var key = ""
@@ -20,10 +18,14 @@ func generateRandomKey() string {
 
 func main() {
 	fmt.Print("Enter 1 for encryption or 2 for decryption : ")
+	var num int
 	fmt.Scanln(&num)
 	if num == 1 {
-		fmt.Print("Enter the name of the file to be encrypted (no spaces) : ")
-		fmt.Scanln(&fileName)
+		fmt.Print("Enter the path of the file to be encrypted : ")
+		var fileName string
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		fileName = scanner.Text()
 		file, err := os.ReadFile(fileName)
 		if err != nil {
 			fmt.Println("File not found")
@@ -41,8 +43,11 @@ func main() {
 			os.WriteFile(fileName, []byte(encrypted), 0644)
 		}
 	} else if num == 2 {
-		fmt.Print("Enter the name of the file to decrypted (no spaces) : ")
-		fmt.Scanln(&fileName)
+		fmt.Print("Enter the path of the file to decrypted : ")
+		var fileName string
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		fileName = scanner.Text()
 		file, err := os.ReadFile(fileName)
 		if err != nil {
 			fmt.Println("File not found")
