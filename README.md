@@ -9,7 +9,7 @@ EncryptCLI is a CLI Tool for encrypting documents and source codes.
 It can encrypt files with ASCII Characters.
 
 ## Downloads
-- Windows 10 64-bit - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/3.0.0/EncryptCLI_Setup.exe)
+- Windows 7 or above, 64-bit - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/3.0.0/EncryptCLI_Setup.exe)
 
 ## Test Locally
 1. Install [Go](https://golang.org/).
