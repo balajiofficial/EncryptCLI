@@ -30,17 +30,22 @@ func main() {
 		if err != nil {
 			fmt.Println("File not found")
 		} else {
+
+			// Insert Key
 			var encrypted = ""
 			key := generateRandomKey()
 			for i := 0; i < 15; i++ {
 				ascii_value := int(key[i])
 				encrypted += fmt.Sprintf("%d ", ascii_value*17)
 			}
+
+			//  Encrypt Document
 			for i := 0; i < len(file); i++ {
 				ascii_value := int(key[i%15])
 				encrypted += fmt.Sprintf("%d ", ascii_value*int(file[i]))
 			}
 			os.WriteFile(fileName, []byte(encrypted), 0644)
+			fmt.Println("File has been encrypted")
 		}
 	} else if num == 2 {
 		fmt.Print("Enter the path of the file to decrypted : ")
@@ -52,6 +57,8 @@ func main() {
 		if err != nil {
 			fmt.Println("File not found")
 		} else {
+
+			// Extract key
 			var key, temp = "", ""
 			var j, i = 0, 0
 			for i = 0; j < 15; i++ {
@@ -64,6 +71,8 @@ func main() {
 					temp += string(file[i])
 				}
 			}
+
+			// Decrypt Main Document
 			text := ""
 			j = 0
 			for ; i < len(file); i++ {
@@ -79,8 +88,13 @@ func main() {
 			}
 
 			os.WriteFile(fileName, []byte(text), 0644)
+			fmt.Println("File has been decrypted")
 		}
 	} else {
 		fmt.Println("Invalid input")
 	}
+	fmt.Println()
+	fmt.Print("Press enter to exit the program...")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
 }
