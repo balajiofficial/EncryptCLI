@@ -29,9 +29,11 @@ go run main.go
 - Fix bugs (if any)
 - Add more advanced encryption algorithms
 
-
 ## Contributing
 To contribute to this project, make a pull request.
+
+## Credits
+Icon by [Freepik](https://www.freepik.com/)
 
 ## License
 [MIT License](./LICENSE)
