@@ -1,12 +1,15 @@
 # EncryptCLI
 
 <div align="center">
-  <img src="./images/banner.png" alt="Banner" height="150">
+  <img src="./images/banner.png" alt="Banner" height="150"/>
 </div>
 
 ## About
 EncryptCLI is a CLI Tool for encrypting documents and source codes.
 It can encrypt files with ASCII Characters.
+
+## Screenshot
+<img src="./images/Screenshot.png" alt="Banner"/>
 
 ## Downloads
 - Windows 7 or above, 64-bit - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/3.0.0/EncryptCLI_Setup.exe)
