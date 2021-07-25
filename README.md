@@ -14,7 +14,7 @@ It can encrypt files with ASCII Characters.
 ## Downloads
 - Windows 7 or above, 64-bit - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/3.0.0/EncryptCLI_Setup.exe)
 
-## Test Locally
+## Test Locally (For Windows, MacOS, Linux)
 1. Install [Go](https://golang.org/).
 2. Download this [ZIP Folder](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/3.0.0.zip) or this [tar.gz File](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/3.0.0.tar.gz).
 3. Extract it to a directory of your choice.
