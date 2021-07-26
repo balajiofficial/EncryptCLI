@@ -39,7 +39,7 @@ func main() {
 				encrypted += fmt.Sprintf("%d ", ascii_value*17)
 			}
 
-			//  Encrypt Document
+			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
 				ascii_value := int(key[i%15])
 				encrypted += fmt.Sprintf("%d ", ascii_value*int(file[i]))
