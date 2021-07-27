@@ -21,7 +21,7 @@ func main() {
 	var num int
 	fmt.Scanln(&num)
 	if num == 1 {
-		fmt.Print("Enter the path of the file to be encrypted : ")
+		fmt.Println("Enter the path of the file to be encrypted -")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
@@ -48,7 +48,7 @@ func main() {
 			fmt.Println("File has been encrypted")
 		}
 	} else if num == 2 {
-		fmt.Print("Enter the path of the file to decrypted : ")
+		fmt.Println("Enter the path of the file to decrypted -")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
