@@ -16,14 +16,6 @@ func generateRandomKey() string {
 	return key
 }
 
-func encode_zeroes(str string) string {
-	encoded_str := str
-	for i := 0; i < 5-len(str); i++ {
-		encoded_str = "0" + encoded_str
-	}
-	return encoded_str
-}
-
 func reverse(str string) string {
 	reversed := ""
 	for i := len(str) - 1; i >= 0; i-- {
@@ -52,13 +44,15 @@ func main() {
 			key := generateRandomKey()
 			for i := 0; i < 15; i++ {
 				ascii_value := int(key[i])
-				encrypted += reverse(encode_zeroes(fmt.Sprintf("%d", ascii_value*17)))
+				ascii_str := fmt.Sprint(ascii_value * 17)
+				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 			}
 
 			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
 				ascii_value := int(key[i%15])
-				encrypted += reverse(encode_zeroes(fmt.Sprintf("%d", ascii_value*int(file[i]))))
+				encrypted_str := fmt.Sprint(ascii_value * int(file[i]))
+				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
 			}
 
 			os.WriteFile(fileName, []byte(encrypted), 0644)
@@ -78,29 +72,42 @@ func main() {
 			// Extract key
 			var key, temp = "", ""
 			var j, i = 0, 0
-			for i = 0; j < 15; i++ {
-				temp += string(file[i])
-				if (i+1)%5 == 0 {
-					n, _ := strconv.Atoi(reverse(temp))
-					key += string(rune((n / 17)))
-					temp = ""
-					j++
+			for i = 0; j < 15; j++ {
+				ind, err := strconv.Atoi(string(rune(file[i])))
+				if err != nil {
+					fmt.Println("Invalid Decryption Format")
+					os.Exit(0)
 				}
+				temp = ""
+				for ind > 0 {
+					i++
+					ind--
+					temp += string(rune(file[i]))
+				}
+				n, _ := strconv.Atoi(reverse(temp))
+				key += string(rune((n / 17)))
+				i++
 			}
 
 			// Decrypt Main Document
-			text := ""
+			text, temp := "", ""
 			j = 0
-			k := 0
-			for ; i < len(file); i++ {
-				k++
-				temp += string(file[i])
-				if k%5 == 0 {
-					n, _ := strconv.Atoi(reverse(temp))
-					text += string(rune(n / int(key[j])))
-					j = (j + 1) % 15
-					temp = ""
+			for i < len(file) {
+				ind, _ := strconv.Atoi(string(rune(file[i])))
+				for ; ind > 0; ind-- {
+					i++
+					temp += string(rune(file[i]))
 				}
+				n, err := strconv.Atoi(reverse(temp))
+				if err != nil {
+					fmt.Println("Invalid Decryption Format")
+					os.Exit(0)
+				}
+				key_value := int(key[j])
+				text += string(rune(n / key_value))
+				j = (j + 1) % 15
+				temp = ""
+				i++
 			}
 
 			os.WriteFile(fileName, []byte(text), 0644)
