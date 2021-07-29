@@ -6,11 +6,14 @@ import (
 	"math/rand"
 	"os"
 	"strconv"
+	"time"
 )
 
 func generateRandomKey() string {
 	var key = ""
-	for i := 0; i < 15; i++ {
+	for i := 0; i < 10; i++ {
+		rand.Seed(int64(time.Now().Nanosecond()))
+		time.Sleep(time.Duration(1))
 		key += string(rune(rand.Intn(94) + 33))
 	}
 	return key
@@ -42,7 +45,7 @@ func main() {
 			// Insert Key
 			var encrypted = ""
 			key := generateRandomKey()
-			for i := 0; i < 15; i++ {
+			for i := 0; i < 10; i++ {
 				ascii_value := int(key[i])
 				ascii_str := fmt.Sprint(ascii_value * 17)
 				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
@@ -50,7 +53,7 @@ func main() {
 
 			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
-				ascii_value := int(key[i%15])
+				ascii_value := int(key[i%10])
 				encrypted_str := fmt.Sprint(ascii_value * int(file[i]))
 				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
 			}
@@ -72,7 +75,7 @@ func main() {
 			// Extract key
 			var key, temp = "", ""
 			var j, i = 0, 0
-			for i = 0; j < 15; j++ {
+			for i = 0; j < 10; j++ {
 				ind, err := strconv.Atoi(string(rune(file[i])))
 				if err != nil {
 					fmt.Println("Invalid Decryption Format")
@@ -105,7 +108,7 @@ func main() {
 				}
 				key_value := int(key[j])
 				text += string(rune(n / key_value))
-				j = (j + 1) % 15
+				j = (j + 1) % 10
 				temp = ""
 				i++
 			}
