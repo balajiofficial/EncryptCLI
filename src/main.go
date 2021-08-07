@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"math/rand"
 	"os"
 	"strconv"
@@ -27,6 +28,36 @@ func reverse(str string) string {
 	return reversed
 }
 
+func decimalToHex(n int) string {
+	var str = ""
+	r := n % 16
+	for n > 0 {
+		c := ""
+		if r < 10 {
+			c = fmt.Sprint(r)
+		} else {
+			c = string(rune(r - 10 + int('A')))
+		}
+		str += fmt.Sprint(c)
+		n /= 16
+		r = n % 16
+	}
+	return reverse(str)
+}
+
+func hexToDecimal(str string) int {
+	var n = 0
+	str = reverse(str)
+	for i := 0; i < len(str); i++ {
+		if int(str[i]) >= int('A') {
+			n += (int(str[i]) - int('A') + 10) * int(math.Pow(16, float64(i)))
+		} else {
+			n += (int(str[i]) - int('0')) * int(math.Pow(16, float64(i)))
+		}
+	}
+	return n
+}
+
 func main() {
 	fmt.Print("Enter 1 for encryption or 2 for decryption : ")
 	var num int
@@ -47,14 +78,14 @@ func main() {
 			key := generateRandomKey()
 			for i := 0; i < 10; i++ {
 				ascii_value := int(key[i])
-				ascii_str := fmt.Sprint(ascii_value * 17)
+				ascii_str := fmt.Sprint(decimalToHex(ascii_value * 17))
 				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 			}
 
 			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
 				ascii_value := int(key[i%10])
-				encrypted_str := fmt.Sprint(ascii_value * int(file[i]))
+				encrypted_str := fmt.Sprint(decimalToHex(ascii_value * int(file[i])))
 				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
 			}
 
@@ -87,7 +118,7 @@ func main() {
 					ind--
 					temp += string(rune(file[i]))
 				}
-				n, _ := strconv.Atoi(reverse(temp))
+				n := hexToDecimal(reverse(temp))
 				key += string(rune((n / 17)))
 				i++
 			}
@@ -101,11 +132,7 @@ func main() {
 					i++
 					temp += string(rune(file[i]))
 				}
-				n, err := strconv.Atoi(reverse(temp))
-				if err != nil {
-					fmt.Println("Invalid Decryption Format")
-					os.Exit(0)
-				}
+				n := hexToDecimal(reverse(temp))
 				key_value := int(key[j])
 				text += string(rune(n / key_value))
 				j = (j + 1) % 10
