@@ -28,9 +28,9 @@ func reverse(str string) string {
 	return reversed
 }
 
-func decimalToHex(n int) string {
+func decimalToBase36(n int) string {
 	var str = ""
-	r := n % 16
+	r := n % 36
 	for n > 0 {
 		c := ""
 		if r < 10 {
@@ -39,20 +39,20 @@ func decimalToHex(n int) string {
 			c = string(rune(r - 10 + int('A')))
 		}
 		str += fmt.Sprint(c)
-		n /= 16
-		r = n % 16
+		n /= 36
+		r = n % 36
 	}
 	return reverse(str)
 }
 
-func hexToDecimal(str string) int {
+func base36ToDecimal(str string) int {
 	var n = 0
 	str = reverse(str)
 	for i := 0; i < len(str); i++ {
 		if int(str[i]) >= int('A') {
-			n += (int(str[i]) - int('A') + 10) * int(math.Pow(16, float64(i)))
+			n += (int(str[i]) - int('A') + 10) * int(math.Pow(36, float64(i)))
 		} else {
-			n += (int(str[i]) - int('0')) * int(math.Pow(16, float64(i)))
+			n += (int(str[i]) - int('0')) * int(math.Pow(36, float64(i)))
 		}
 	}
 	return n
@@ -78,14 +78,14 @@ func main() {
 			key := generateRandomKey()
 			for i := 0; i < 10; i++ {
 				ascii_value := int(key[i])
-				ascii_str := fmt.Sprint(decimalToHex(ascii_value * 17))
+				ascii_str := fmt.Sprint(decimalToBase36(ascii_value * 17))
 				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 			}
 
 			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
 				ascii_value := int(key[i%10])
-				encrypted_str := fmt.Sprint(decimalToHex(ascii_value * int(file[i])))
+				encrypted_str := fmt.Sprint(decimalToBase36(ascii_value * int(file[i])))
 				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
 			}
 
@@ -118,7 +118,7 @@ func main() {
 					ind--
 					temp += string(rune(file[i]))
 				}
-				n := hexToDecimal(reverse(temp))
+				n := base36ToDecimal(reverse(temp))
 				key += string(rune((n / 17)))
 				i++
 			}
@@ -132,7 +132,7 @@ func main() {
 					i++
 					temp += string(rune(file[i]))
 				}
-				n := hexToDecimal(reverse(temp))
+				n := base36ToDecimal(reverse(temp))
 				key_value := int(key[j])
 				text += string(rune(n / key_value))
 				j = (j + 1) % 10
