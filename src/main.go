@@ -28,35 +28,39 @@ func reverse(str string) string {
 	return reversed
 }
 
-func decimalTobase62(n int) string {
+func decimalTobase77(n int) string {
 	var str = ""
-	r := n % 62
+	r := n % 77
 	for n > 0 {
 		c := ""
 		if r < 10 {
 			c = fmt.Sprint(r)
 		} else if r < 36 {
 			c = string(rune(r - 10 + int('A')))
-		} else {
+		} else if r < 62 {
 			c = string(rune(r - 36 + int('a')))
+		} else {
+			c = string(rune(r - 62 + int('!')))
 		}
 		str += fmt.Sprint(c)
-		n /= 62
-		r = n % 62
+		n /= 77
+		r = n % 77
 	}
 	return reverse(str)
 }
 
-func base62ToDecimal(str string) int {
+func base77ToDecimal(str string) int {
 	var n = 0
 	str = reverse(str)
 	for i := 0; i < len(str); i++ {
 		if int(str[i]) >= int('a') {
-			n += (int(str[i]) - int('a') + 36) * int(math.Pow(62, float64(i)))
+			n += (int(str[i]) - int('a') + 36) * int(math.Pow(77, float64(i)))
 		} else if int(str[i]) >= int('A') {
-			n += (int(str[i]) - int('A') + 10) * int(math.Pow(62, float64(i)))
+			n += (int(str[i]) - int('A') + 10) * int(math.Pow(77, float64(i)))
+		} else if int(str[i]) >= int('0') {
+			n += (int(str[i]) - int('0')) * int(math.Pow(77, float64(i)))
 		} else {
-			n += (int(str[i]) - int('0')) * int(math.Pow(62, float64(i)))
+			n += (int(str[i]) - int('!') + 62) * int(math.Pow(77, float64(i)))
 		}
 	}
 	return n
@@ -82,14 +86,14 @@ func main() {
 			key := generateRandomKey()
 			for i := 0; i < 10; i++ {
 				ascii_value := int(key[i])
-				ascii_str := fmt.Sprint(decimalTobase62(ascii_value * 17))
+				ascii_str := fmt.Sprint(decimalTobase77(ascii_value * 17))
 				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 			}
 
 			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
 				ascii_value := int(key[i%10])
-				encrypted_str := fmt.Sprint(decimalTobase62(ascii_value * int(file[i])))
+				encrypted_str := fmt.Sprint(decimalTobase77(ascii_value * int(file[i])))
 				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
 			}
 
@@ -122,7 +126,7 @@ func main() {
 					ind--
 					temp += string(rune(file[i]))
 				}
-				n := base62ToDecimal(reverse(temp))
+				n := base77ToDecimal(reverse(temp))
 				key += string(rune((n / 17)))
 				i++
 			}
@@ -136,7 +140,7 @@ func main() {
 					i++
 					temp += string(rune(file[i]))
 				}
-				n := base62ToDecimal(reverse(temp))
+				n := base77ToDecimal(reverse(temp))
 				key_value := int(key[j])
 				text += string(rune(n / key_value))
 				j = (j + 1) % 10
