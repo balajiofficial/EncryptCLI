@@ -83,7 +83,18 @@ func main() {
 
 			// Insert Key
 			var encrypted = ""
-			key := generateRandomKey()
+			fmt.Print("Do you wish to have your own password?")
+			scanner.Scan()
+			response := scanner.Text()
+			var key string
+			if response == "y" {
+				fmt.Println("Enter your new password : ")
+				scanner.Scan()
+				key = scanner.Text()
+				fmt.Println(key)
+			} else {
+				key = generateRandomKey()
+			}
 			for i := 0; i < 10; i++ {
 				ascii_value := int(key[i])
 				ascii_str := fmt.Sprint(decimalTobase77(ascii_value * 17))
