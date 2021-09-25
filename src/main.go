@@ -83,27 +83,34 @@ func main() {
 
 			// Insert Key
 			var encrypted = ""
-			fmt.Print("Do you wish to have your own password?")
+			fmt.Print("Do you wish to have your own password? (y/n) ")
 			scanner.Scan()
 			response := scanner.Text()
 			var key string
 			if response == "y" {
-				fmt.Println("Enter your new password : ")
-				scanner.Scan()
-				key = scanner.Text()
-				fmt.Println(key)
+				for true {
+					fmt.Print("Enter your new password : ")
+					scanner.Scan()
+					key = scanner.Text()
+					fmt.Print("Enter password again to confirm : ")
+					scanner.Scan()
+					temp := scanner.Text()
+					if key == temp {
+						break
+					}
+				}
 			} else {
 				key = generateRandomKey()
-			}
-			for i := 0; i < 10; i++ {
-				ascii_value := int(key[i])
-				ascii_str := fmt.Sprint(decimalTobase77(ascii_value * 17))
-				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
+				for i := 0; i < len(key); i++ {
+					ascii_value := int(key[i])
+					ascii_str := fmt.Sprint(decimalTobase77(ascii_value * 17))
+					encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
+				}
 			}
 
 			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
-				ascii_value := int(key[i%10])
+				ascii_value := int(key[i%len(key)])
 				encrypted_str := fmt.Sprint(decimalTobase77(ascii_value * int(file[i])))
 				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
 			}
@@ -122,24 +129,34 @@ func main() {
 			fmt.Println("File not found")
 		} else {
 
-			// Extract key
 			var key, temp = "", ""
 			var j, i = 0, 0
-			for i = 0; j < 10; j++ {
-				ind, err := strconv.Atoi(string(rune(file[i])))
-				if err != nil {
-					fmt.Println("Invalid Decryption Format")
-					os.Exit(0)
-				}
-				temp = ""
-				for ind > 0 {
+			fmt.Print("Have you created a password? (y/n) ")
+			scanner.Scan()
+			response := scanner.Text()
+			if response == "y" {
+				fmt.Print("Enter password (enter carefully, the change is irreversible) : ")
+				scanner.Scan()
+				key = scanner.Text()
+			} else {
+
+				// Extract Key
+				for i = 0; j < 10; j++ {
+					ind, err := strconv.Atoi(string(rune(file[i])))
+					if err != nil {
+						fmt.Println("Invalid Decryption Format")
+						os.Exit(0)
+					}
+					temp = ""
+					for ind > 0 {
+						i++
+						ind--
+						temp += string(rune(file[i]))
+					}
+					n := base77ToDecimal(reverse(temp))
+					key += string(rune((n / 17)))
 					i++
-					ind--
-					temp += string(rune(file[i]))
 				}
-				n := base77ToDecimal(reverse(temp))
-				key += string(rune((n / 17)))
-				i++
 			}
 
 			// Decrypt Main Document
@@ -154,7 +171,7 @@ func main() {
 				n := base77ToDecimal(reverse(temp))
 				key_value := int(key[j])
 				text += string(rune(n / key_value))
-				j = (j + 1) % 10
+				j = (j + 1) % len(key)
 				temp = ""
 				i++
 			}
