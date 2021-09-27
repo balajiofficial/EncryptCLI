@@ -71,6 +71,7 @@ func main() {
 	var num int
 	fmt.Scanln(&num)
 	if num == 1 {
+		password := false
 		fmt.Println("Enter the path of the file to be encrypted -")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
@@ -96,16 +97,24 @@ func main() {
 					scanner.Scan()
 					temp := scanner.Text()
 					if key == temp {
+						password = true
 						break
 					}
 				}
-			} else {
+			} else if response == "n" {
 				key = generateRandomKey()
 				for i := 0; i < len(key); i++ {
 					ascii_value := int(key[i])
 					ascii_str := fmt.Sprint(decimalTobase77(ascii_value * 17))
 					encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 				}
+			} else {
+				fmt.Println("Invalid input")
+				fmt.Println()
+				fmt.Print("Press enter to exit the program...")
+				scanner := bufio.NewScanner(os.Stdin)
+				scanner.Scan()
+				return
 			}
 
 			//  Encrypt Main Document
@@ -116,9 +125,14 @@ func main() {
 			}
 
 			os.WriteFile(fileName, []byte(encrypted), 0644)
-			fmt.Println("File has been encrypted")
+			if !password {
+				fmt.Println("File has been encrypted")
+			} else {
+				fmt.Println("File has been encrypted using password")
+			}
 		}
 	} else if num == 2 {
+		password := false
 		fmt.Println("Enter the path of the file to be decrypted -")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
@@ -138,7 +152,8 @@ func main() {
 				fmt.Print("Enter password (enter carefully, the change is irreversible) : ")
 				scanner.Scan()
 				key = scanner.Text()
-			} else {
+				password = true
+			} else if response == "n" {
 
 				// Extract Key
 				for i = 0; j < 10; j++ {
@@ -157,6 +172,13 @@ func main() {
 					key += string(rune((n / 17)))
 					i++
 				}
+			} else {
+				fmt.Println("Invalid input")
+				fmt.Println()
+				fmt.Print("Press enter to exit the program...")
+				scanner := bufio.NewScanner(os.Stdin)
+				scanner.Scan()
+				return
 			}
 
 			// Decrypt Main Document
@@ -177,7 +199,11 @@ func main() {
 			}
 
 			os.WriteFile(fileName, []byte(text), 0644)
-			fmt.Println("File has been decrypted")
+			if !password {
+				fmt.Println("File has been decrypted")
+			} else {
+				fmt.Println("File has been decrypted using password")
+			}
 		}
 	} else {
 		fmt.Println("Invalid input")
