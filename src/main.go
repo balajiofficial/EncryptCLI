@@ -20,6 +20,26 @@ func generateRandomKey() string {
 	return key
 }
 
+func generateRandomEvenChar() rune {
+	var char rune = 'A'
+	for int(char)%2 == 1 {
+		rand.Seed(int64(time.Now().Nanosecond()))
+		time.Sleep(time.Duration(1))
+		char = rune(rand.Intn(94) + 33)
+	}
+	return char
+}
+
+func generateRandomOddChar() rune {
+	var char rune = 'B'
+	for int(char)%2 == 0 {
+		rand.Seed(int64(time.Now().Nanosecond()))
+		time.Sleep(time.Duration(1))
+		char = rune(rand.Intn(94) + 33)
+	}
+	return char
+}
+
 func reverse(str string) string {
 	reversed := ""
 	for i := len(str) - 1; i >= 0; i-- {
@@ -90,24 +110,20 @@ func main() {
 			var key string
 			if response == "y" {
 				for true {
-					fmt.Print("Enter your new password : ")
+					fmt.Print("Enter your new password (with 10 characters) : ")
 					scanner.Scan()
 					key = scanner.Text()
-					fmt.Print("Enter password again to confirm : ")
-					scanner.Scan()
-					temp := scanner.Text()
-					if key == temp {
-						password = true
-						break
+					if len(key) != 10 {
+						fmt.Println("Enter password with 10 characters")
+						continue
 					}
+					password = true
+					break
 				}
+				encrypted = string(generateRandomEvenChar())
 			} else if response == "n" {
+				encrypted = string(generateRandomOddChar())
 				key = generateRandomKey()
-				for i := 0; i < len(key); i++ {
-					ascii_value := int(key[i])
-					ascii_str := fmt.Sprint(decimalTobase77(ascii_value * 17))
-					encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
-				}
 			} else {
 				fmt.Println("Invalid input")
 				fmt.Println()
@@ -115,6 +131,11 @@ func main() {
 				scanner := bufio.NewScanner(os.Stdin)
 				scanner.Scan()
 				return
+			}
+			for i := 0; i < len(key); i++ {
+				ascii_value := int(key[i])
+				ascii_str := fmt.Sprint(decimalTobase77(ascii_value * 17))
+				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 			}
 
 			//  Encrypt Main Document
@@ -143,42 +164,59 @@ func main() {
 			fmt.Println("File not found")
 		} else {
 
-			var key, temp = "", ""
-			var j, i = 0, 0
+			var key, temp, passwordStr = "", "", ""
+			var j, i = 0, 1
 			fmt.Print("Have you created a password? (y/n) ")
 			scanner.Scan()
 			response := scanner.Text()
 			if response == "y" {
-				fmt.Print("Enter password (enter carefully, the change is irreversible) : ")
+				fmt.Print("Enter password : ")
 				scanner.Scan()
-				key = scanner.Text()
-				password = true
-			} else if response == "n" {
-
-				// Extract Key
-				for i = 0; j < 10; j++ {
-					ind, err := strconv.Atoi(string(rune(file[i])))
-					if err != nil {
-						fmt.Println("Invalid Decryption Format")
-						os.Exit(0)
-					}
-					temp = ""
-					for ind > 0 {
-						i++
-						ind--
-						temp += string(rune(file[i]))
-					}
-					n := base77ToDecimal(reverse(temp))
-					key += string(rune((n / 17)))
-					i++
+				passwordStr = scanner.Text()
+				if len(passwordStr) != 10 {
+					fmt.Println("Incorrect Password Length")
+					fmt.Println()
+					fmt.Print("Press enter to exit the program...")
+					scanner := bufio.NewScanner(os.Stdin)
+					scanner.Scan()
+					return
 				}
-			} else {
+				password = true
+			} else if response != "n" {
 				fmt.Println("Invalid input")
 				fmt.Println()
 				fmt.Print("Press enter to exit the program...")
 				scanner := bufio.NewScanner(os.Stdin)
 				scanner.Scan()
 				return
+			}
+
+			for ; j < 10; j++ {
+				ind, err := strconv.Atoi(string(rune(file[i])))
+				if err != nil {
+					fmt.Println("Invalid Decryption Format")
+					return
+				}
+				temp = ""
+				for ind > 0 {
+					i++
+					ind--
+					temp += string(rune(file[i]))
+				}
+				n := base77ToDecimal(reverse(temp))
+				key += string(rune((n / 17)))
+				i++
+			}
+
+			if int(file[0])%2 == 0 {
+				if passwordStr != key {
+					fmt.Println("Incorrect Password")
+					fmt.Println()
+					fmt.Print("Press enter to exit the program...")
+					scanner := bufio.NewScanner(os.Stdin)
+					scanner.Scan()
+					return
+				}
 			}
 
 			// Decrypt Main Document
