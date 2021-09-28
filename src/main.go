@@ -113,17 +113,14 @@ func main() {
 			var key string
 			if response == "y" {
 				for true {
-					fmt.Print("Enter your new password (with 10 characters) : ")
+					fmt.Print("Enter your new password : ")
 					scanner.Scan()
 					key = scanner.Text()
-					if len(key) != 10 {
-						fmt.Println("Enter password with 10 characters")
-						continue
-					}
 					password = true
 					break
 				}
 				encrypted = string(generateRandomEvenChar())
+				encrypted += decimalTobase77(len(key))
 			} else if response == "n" {
 				encrypted = string(generateRandomOddChar())
 				key = generateRandomKey()
@@ -172,9 +169,13 @@ func main() {
 			password := int(file[0])%2 == 0
 
 			var key, temp, passwordStr = "", "", ""
-			var j, i = 0, 1
+			var j, i, passwordLen = 0, 1, 10
 
-			for ; j < 10; j++ {
+			if password {
+				passwordLen = base77ToDecimal(string(file[1]))
+				i++
+			}
+			for ; j < passwordLen; j++ {
 				ind, err := strconv.Atoi(string(rune(file[i])))
 				if err != nil {
 					fmt.Println("Invalid Decryption Format")
