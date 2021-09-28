@@ -91,6 +91,9 @@ func main() {
 	var num int
 	fmt.Scanln(&num)
 	if num == 1 {
+
+		// Encryption
+
 		password := false
 		fmt.Println("Enter the path of the file to be encrypted -")
 		var fileName string
@@ -153,7 +156,9 @@ func main() {
 			}
 		}
 	} else if num == 2 {
-		password := false
+
+		// Decryption
+
 		fmt.Println("Enter the path of the file to be decrypted -")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
@@ -164,32 +169,10 @@ func main() {
 			fmt.Println("File not found")
 		} else {
 
+			password := int(file[0])%2 == 0
+
 			var key, temp, passwordStr = "", "", ""
 			var j, i = 0, 1
-			fmt.Print("Have you created a password? (y/n) ")
-			scanner.Scan()
-			response := scanner.Text()
-			if response == "y" {
-				fmt.Print("Enter password : ")
-				scanner.Scan()
-				passwordStr = scanner.Text()
-				if len(passwordStr) != 10 {
-					fmt.Println("Incorrect Password Length")
-					fmt.Println()
-					fmt.Print("Press enter to exit the program...")
-					scanner := bufio.NewScanner(os.Stdin)
-					scanner.Scan()
-					return
-				}
-				password = true
-			} else if response != "n" {
-				fmt.Println("Invalid input")
-				fmt.Println()
-				fmt.Print("Press enter to exit the program...")
-				scanner := bufio.NewScanner(os.Stdin)
-				scanner.Scan()
-				return
-			}
 
 			for ; j < 10; j++ {
 				ind, err := strconv.Atoi(string(rune(file[i])))
@@ -208,15 +191,21 @@ func main() {
 				i++
 			}
 
-			if int(file[0])%2 == 0 {
-				if passwordStr != key {
-					fmt.Println("Incorrect Password")
-					fmt.Println()
-					fmt.Print("Press enter to exit the program...")
-					scanner := bufio.NewScanner(os.Stdin)
-					scanner.Scan()
-					return
-				}
+			if password {
+				fmt.Print("Enter password : ")
+				scanner.Scan()
+				passwordStr = scanner.Text()
+			} else {
+				passwordStr = key
+			}
+
+			if passwordStr != key {
+				fmt.Println("Incorrect Password")
+				fmt.Println()
+				fmt.Print("Press enter to exit the program...")
+				scanner := bufio.NewScanner(os.Stdin)
+				scanner.Scan()
+				return
 			}
 
 			// Decrypt Main Document
@@ -237,10 +226,10 @@ func main() {
 			}
 
 			os.WriteFile(fileName, []byte(text), 0644)
-			if !password {
-				fmt.Println("File has been decrypted")
-			} else {
+			if password {
 				fmt.Println("File has been decrypted using password")
+			} else {
+				fmt.Println("File has been decrypted")
 			}
 		}
 	} else {
