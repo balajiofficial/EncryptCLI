@@ -12,7 +12,7 @@ It can encrypt files with Windows 10 supported Unicode Characters.
 <img src="./images/Screenshot.png" alt="Banner"/>
 
 ## Downloads
-- Windows 7+, Intel 64-bit - [Download](https://github.com/K-Balaji/EncryptCLI/releases/download/5.0.0/EncryptCLI_Setup.exe)
+- Windows 7+, Intel 64-bit CPU - [Download](https://github.com/balajiofficial/EncryptCLI/releases/download/6.0.0/EncryptCLI_Setup.exe)
 
 ## Test Locally (For Windows, MacOS, Linux)
 1. Install [Go](https://golang.org/).
