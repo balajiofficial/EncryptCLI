@@ -48,9 +48,9 @@ func reverse(str string) string {
 	return reversed
 }
 
-func decimalTobase84(n int) string {
+func decimalTobase90(n int) string {
 	var str = ""
-	r := n % 84
+	r := n % 90
 	for n > 0 {
 		c := ""
 		if r < 10 {
@@ -61,30 +61,34 @@ func decimalTobase84(n int) string {
 			c = string(rune(r - 36 + int('a')))
 		} else if r < 77 {
 			c = string(rune(r - 62 + int('!')))
-		} else {
+		} else if r < 84 {
 			c = string(rune(r - 77 + int(':')))
+		} else {
+			c = string(rune(r - 84 + int('[')))
 		}
 		str += fmt.Sprint(c)
-		n /= 84
-		r = n % 84
+		n /= 90
+		r = n % 90
 	}
 	return reverse(str)
 }
 
-func base84ToDecimal(str string) int {
+func base90ToDecimal(str string) int {
 	var n = 0
 	str = reverse(str)
 	for i := 0; i < len(str); i++ {
 		if int(str[i]) >= int('a') {
-			n += (int(str[i]) - int('a') + 36) * int(math.Pow(84, float64(i)))
+			n += (int(str[i]) - int('a') + 36) * int(math.Pow(90, float64(i)))
+		} else if int(str[i]) >= int('[') {
+			n += (int(str[i]) - int('[') + 84) * int(math.Pow(90, float64(i)))
 		} else if int(str[i]) >= int('A') {
-			n += (int(str[i]) - int('A') + 10) * int(math.Pow(84, float64(i)))
+			n += (int(str[i]) - int('A') + 10) * int(math.Pow(90, float64(i)))
 		} else if int(str[i]) >= int(':') {
-			n += (int(str[i]) - int(':') + 77) * int(math.Pow(84, float64(i)))
+			n += (int(str[i]) - int(':') + 77) * int(math.Pow(90, float64(i)))
 		} else if int(str[i]) >= int('0') {
-			n += (int(str[i]) - int('0')) * int(math.Pow(84, float64(i)))
+			n += (int(str[i]) - int('0')) * int(math.Pow(90, float64(i)))
 		} else {
-			n += (int(str[i]) - int('!') + 62) * int(math.Pow(84, float64(i)))
+			n += (int(str[i]) - int('!') + 62) * int(math.Pow(90, float64(i)))
 		}
 	}
 	return n
@@ -123,7 +127,7 @@ func main() {
 					break
 				}
 				encrypted = string(generateRandomEvenChar())
-				encrypted += decimalTobase84(len(key))
+				encrypted += decimalTobase90(len(key))
 			} else if response == "n" {
 				encrypted = string(generateRandomOddChar())
 				key = generateRandomKey()
@@ -137,14 +141,14 @@ func main() {
 			}
 			for i := 0; i < len(key); i++ {
 				ascii_value := int(key[i])
-				ascii_str := fmt.Sprint(decimalTobase84(ascii_value * 17))
+				ascii_str := fmt.Sprint(decimalTobase90(ascii_value * 17))
 				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 			}
 
 			//  Encrypt Main Document
 			for i := 0; i < len(file); i++ {
 				ascii_value := int(key[i%len(key)])
-				encrypted_str := fmt.Sprint(decimalTobase84(ascii_value * int(file[i])))
+				encrypted_str := fmt.Sprint(decimalTobase90(ascii_value * int(file[i])))
 				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
 			}
 
@@ -175,7 +179,7 @@ func main() {
 			var j, i, passwordLen = 0, 1, 10
 
 			if password {
-				passwordLen = base84ToDecimal(string(file[1]))
+				passwordLen = base90ToDecimal(string(file[1]))
 				i++
 			}
 			for ; j < passwordLen; j++ {
@@ -190,7 +194,7 @@ func main() {
 					ind--
 					temp += string(rune(file[i]))
 				}
-				n := base84ToDecimal(reverse(temp))
+				n := base90ToDecimal(reverse(temp))
 				key += string(rune((n / 17)))
 				i++
 			}
@@ -221,7 +225,7 @@ func main() {
 					i++
 					temp += string(rune(file[i]))
 				}
-				n := base84ToDecimal(reverse(temp))
+				n := base90ToDecimal(reverse(temp))
 				key_value := int(key[j])
 				text += string(rune(n / key_value))
 				j = (j + 1) % len(key)
