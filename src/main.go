@@ -127,6 +127,14 @@ func main() {
 					fmt.Print("Enter your new password : ")
 					scanner.Scan()
 					key = scanner.Text()
+					if key == "" {
+						fmt.Println("Invalid input")
+						fmt.Println()
+						fmt.Print("Press enter to exit the program...")
+						scanner := bufio.NewScanner(os.Stdin)
+						scanner.Scan()
+						return
+					}
 					password = true
 					break
 				}
