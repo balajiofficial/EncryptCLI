@@ -98,6 +98,15 @@ func base94ToDecimal(str string) int {
 	return n
 }
 
+func exitMessage(message string) {
+	fmt.Println()
+	fmt.Println(message)
+	fmt.Print("Press enter to exit the program...")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	os.Exit(0)
+}
+
 func main() {
 	fmt.Print("Enter 1 for encryption or 2 for decryption : ")
 	var num int
@@ -113,63 +122,52 @@ func main() {
 		fileName = scanner.Text()
 		file, err := os.ReadFile(fileName)
 		if err != nil {
-			fmt.Println("File not found")
-		} else {
+			exitMessage("File not found")
+		}
 
-			// Insert Key
-			var encrypted = ""
-			fmt.Print("Do you wish to have your own password? (y/n) ")
-			scanner.Scan()
-			response := scanner.Text()
-			var key string
-			if response == "y" {
-				for true {
-					fmt.Print("Enter your new password : ")
-					scanner.Scan()
-					key = scanner.Text()
-					if key == "" {
-						fmt.Println("Invalid input")
-						fmt.Println()
-						fmt.Print("Press enter to exit the program...")
-						scanner := bufio.NewScanner(os.Stdin)
-						scanner.Scan()
-						return
-					}
-					password = true
-					break
-				}
-				encrypted = string(generateRandomEvenChar())
-				encrypted += decimalTobase94(len(key))
-			} else if response == "n" {
-				encrypted = string(generateRandomOddChar())
-				key = generateRandomKey()
-			} else {
-				fmt.Println("Invalid input")
-				fmt.Println()
-				fmt.Print("Press enter to exit the program...")
-				scanner := bufio.NewScanner(os.Stdin)
+		// Insert Key
+		var encrypted = ""
+		fmt.Print("Do you wish to have your own password? (y/n) ")
+		scanner.Scan()
+		response := scanner.Text()
+		var key string
+		if response == "y" {
+			for true {
+				fmt.Print("Enter your new password : ")
 				scanner.Scan()
-				return
+				key = scanner.Text()
+				if key == "" {
+					exitMessage("Invalid input")
+				}
+				password = true
+				break
 			}
-			for i := 0; i < len(key); i++ {
-				ascii_value := int(key[i])
-				ascii_str := fmt.Sprint(decimalTobase94(ascii_value * 17))
-				encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
-			}
+			encrypted = string(generateRandomEvenChar())
+			encrypted += decimalTobase94(len(key))
+		} else if response == "n" {
+			encrypted = string(generateRandomOddChar())
+			key = generateRandomKey()
+		} else {
+			exitMessage("Invalid input")
+		}
+		for i := 0; i < len(key); i++ {
+			ascii_value := int(key[i])
+			ascii_str := fmt.Sprint(decimalTobase94(ascii_value * 17))
+			encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
+		}
 
-			//  Encrypt Main Document
-			for i := 0; i < len(file); i++ {
-				ascii_value := int(key[i%len(key)])
-				encrypted_str := fmt.Sprint(decimalTobase94(ascii_value * int(file[i])))
-				encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
-			}
+		//  Encrypt Main Document
+		for i := 0; i < len(file); i++ {
+			ascii_value := int(key[i%len(key)])
+			encrypted_str := fmt.Sprint(decimalTobase94(ascii_value * int(file[i])))
+			encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
+		}
 
-			os.WriteFile(fileName, []byte(encrypted), 0644)
-			if !password {
-				fmt.Println("File has been encrypted")
-			} else {
-				fmt.Println("File has been encrypted using password")
-			}
+		os.WriteFile(fileName, []byte(encrypted), 0644)
+		if !password {
+			exitMessage("File has been encrypted")
+		} else {
+			exitMessage("File has been encrypted using password")
 		}
 	} else if num == 2 {
 
@@ -183,80 +181,70 @@ func main() {
 		file, err := os.ReadFile(fileName)
 		if err != nil {
 			fmt.Println("File not found")
-		} else {
-
-			password := int(file[0])%2 == 0
-
-			var key, temp, passwordStr = "", "", ""
-			var j, i, passwordLen = 0, 1, 10
-
-			if password {
-				passwordLen = base94ToDecimal(string(file[1]))
-				i++
-			}
-			for ; j < passwordLen; j++ {
-				ind, err := strconv.Atoi(string(rune(file[i])))
-				if err != nil {
-					fmt.Println("Invalid Decryption Format")
-					return
-				}
-				temp = ""
-				for ind > 0 {
-					i++
-					ind--
-					temp += string(rune(file[i]))
-				}
-				n := base94ToDecimal(reverse(temp))
-				key += string(rune((n / 17)))
-				i++
-			}
-
-			if password {
-				fmt.Print("Enter password : ")
-				scanner.Scan()
-				passwordStr = scanner.Text()
-			} else {
-				passwordStr = key
-			}
-
-			if passwordStr != key {
-				fmt.Println("Incorrect Password")
-				fmt.Println()
-				fmt.Print("Press enter to exit the program...")
-				scanner := bufio.NewScanner(os.Stdin)
-				scanner.Scan()
-				return
-			}
-
-			// Decrypt Main Document
-			text, temp := "", ""
-			j = 0
-			for i < len(file) {
-				ind, _ := strconv.Atoi(string(rune(file[i])))
-				for ; ind > 0; ind-- {
-					i++
-					temp += string(rune(file[i]))
-				}
-				n := base94ToDecimal(reverse(temp))
-				key_value := int(key[j])
-				text += string(rune(n / key_value))
-				j = (j + 1) % len(key)
-				temp = ""
-				i++
-			}
-
-			os.WriteFile(fileName, []byte(text), 0644)
-			if password {
-				fmt.Println("File has been decrypted using password")
-			} else {
-				fmt.Println("File has been decrypted")
-			}
 		}
+
+		password := int(file[0])%2 == 0
+
+		var key, temp, passwordStr = "", "", ""
+		var j, i, passwordLen = 0, 1, 10
+
+		if password {
+			passwordLen = base94ToDecimal(string(file[1]))
+			i++
+		}
+		for ; j < passwordLen; j++ {
+			ind, err := strconv.Atoi(string(rune(file[i])))
+			if err != nil {
+				exitMessage("Invalid Decryption Format")
+			}
+			temp = ""
+			for ind > 0 {
+				i++
+				ind--
+				temp += string(rune(file[i]))
+			}
+			n := base94ToDecimal(reverse(temp))
+			key += string(rune((n / 17)))
+			i++
+		}
+
+		if password {
+			fmt.Print("Enter password : ")
+			scanner.Scan()
+			passwordStr = scanner.Text()
+		} else {
+			passwordStr = key
+		}
+
+		if passwordStr != key {
+			exitMessage("Incorrect Password")
+		}
+
+		// Decrypt Main Document
+		text, temp := "", ""
+		j = 0
+		for i < len(file) {
+			ind, _ := strconv.Atoi(string(rune(file[i])))
+			for ; ind > 0; ind-- {
+				i++
+				temp += string(rune(file[i]))
+			}
+			n := base94ToDecimal(reverse(temp))
+			key_value := int(key[j])
+			text += string(rune(n / key_value))
+			j = (j + 1) % len(key)
+			temp = ""
+			i++
+		}
+
+		os.WriteFile(fileName, []byte(text), 0644)
+		if password {
+			exitMessage("File has been decrypted using password")
+		} else {
+			exitMessage("File has been decrypted")
+		}
+
 	} else {
-		fmt.Println("Invalid input")
+		exitMessage("Invalid input")
 	}
-	fmt.Println()
-	fmt.Print("Press enter to exit the program...")
-	scanner := bufio.NewScanner(os.Stdin)
-	scanner.Scan()
 }
