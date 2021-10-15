@@ -10,9 +10,9 @@ import (
 	"time"
 )
 
-func generateRandomKey() string {
+func generateRandomKey(n int) string {
 	var key = ""
-	for i := 0; i < 10; i++ {
+	for i := 0; i < n; i++ {
 		rand.Seed(int64(time.Now().Nanosecond()))
 		time.Sleep(time.Duration(1))
 		key += string(rune(rand.Intn(94) + 33))
@@ -107,6 +107,18 @@ func exitMessage(message string) {
 	os.Exit(0)
 }
 
+func stringToNumber(str string) int {
+	num := 0
+	if str == "1" {
+		num = 5
+	} else if str == "2" {
+		num = 15
+	} else {
+		exitMessage("Invalid Input")
+	}
+	return num
+}
+
 func main() {
 	fmt.Print("Enter 1 for encryption or 2 for decryption : ")
 	var num int
@@ -115,7 +127,7 @@ func main() {
 
 		// Encryption
 		password := false
-		fmt.Println("Enter the path of the file to be encrypted -")
+		fmt.Println("Enter the path of the file to be encrypted - ")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
@@ -127,13 +139,13 @@ func main() {
 
 		// Insert Key
 		var encrypted = ""
-		fmt.Print("Do you wish to have your own password? (y/n) ")
+		fmt.Print("Do you wish to have your own password? (y/n) : ")
 		scanner.Scan()
 		response := scanner.Text()
 		var key string
 		if response == "y" {
 			for true {
-				fmt.Print("Enter your new password : ")
+				fmt.Print("Enter your password : ")
 				scanner.Scan()
 				key = scanner.Text()
 				if key == "" {
@@ -146,7 +158,11 @@ func main() {
 			encrypted += decimalTobase94(len(key))
 		} else if response == "n" {
 			encrypted = string(generateRandomOddChar())
-			key = generateRandomKey()
+			fmt.Print("Do you wish to save space or increase security? (1/2) : ")
+			scanner.Scan()
+			var keyLength = stringToNumber(scanner.Text())
+			key = generateRandomKey(keyLength)
+			encrypted += decimalTobase94(len(key))
 		} else {
 			exitMessage("Invalid input")
 		}
@@ -173,7 +189,7 @@ func main() {
 
 		// Decryption
 
-		fmt.Println("Enter the path of the file to be decrypted -")
+		fmt.Println("Enter the path of the file to be decrypted - ")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
@@ -188,10 +204,8 @@ func main() {
 		var key, temp, passwordStr = "", "", ""
 		var j, i, passwordLen = 0, 1, 10
 
-		if password {
-			passwordLen = base94ToDecimal(string(file[1]))
-			i++
-		}
+		passwordLen = base94ToDecimal(string(file[1]))
+		i++
 		for ; j < passwordLen; j++ {
 			ind, err := strconv.Atoi(string(rune(file[i])))
 			if err != nil {
