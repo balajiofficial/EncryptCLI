@@ -16,7 +16,7 @@ It can encrypt files with Windows supported Unicode Characters.
 
 ## Test Locally (For Windows, MacOS, Linux)
 1. Install [Go](https://golang.org/).
-2. Download this [ZIP Folder](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/7.0.0.zip) or this [tar.gz File](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/7.0.0.tar.gz).
+2. Download this [ZIP Folder](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/7.0.0.zip) or this [TAR.GZ File](https://github.com/K-Balaji/EncryptCLI/archive/refs/tags/7.0.0.tar.gz).
 3. Extract it to a directory of your choice.
 2. Open the terminal, navigate to that directory and enter this - 
 ```
