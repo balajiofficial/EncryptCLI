@@ -127,6 +127,7 @@ func main() {
 
 		// Encryption
 		password := false
+		saveSpace := false
 		fmt.Println("Enter the path of the file to be encrypted - ")
 		var fileName string
 		scanner := bufio.NewScanner(os.Stdin)
@@ -137,38 +138,61 @@ func main() {
 			exitMessage("File not found")
 		}
 
+		fmt.Print("Do you wish to save space or increase security? (1/2) : ")
+		scanner.Scan()
+		securityRes := scanner.Text()
+		var spaceOrSecurity = stringToNumber(securityRes)
+		if securityRes == "1" {
+			saveSpace = true
+		} else {
+			saveSpace = false
+		}
+
 		// Insert Key
 		var encrypted = ""
+		if saveSpace {
+			encrypted += string(generateRandomOddChar())
+		} else {
+			encrypted += string(generateRandomEvenChar())
+		}
 		fmt.Print("Do you wish to have your own password? (y/n) : ")
 		scanner.Scan()
 		response := scanner.Text()
 		var key string
 		if response == "y" {
+			encrypted += string(generateRandomEvenChar())
 			for true {
 				fmt.Print("Enter your password : ")
 				scanner.Scan()
 				key = scanner.Text()
 				if key == "" {
-					exitMessage("Invalid input")
+					fmt.Println("Invalid Input")
+					continue
+				}
+				if len(key) > 94 {
+					fmt.Println("Password Length should be less than 95")
+					continue
 				}
 				password = true
 				break
 			}
-			encrypted = string(generateRandomEvenChar())
-			encrypted += decimalTobase95(len(key))
 		} else if response == "n" {
-			encrypted = string(generateRandomOddChar())
-			fmt.Print("Do you wish to save space or increase security? (1/2) : ")
-			scanner.Scan()
-			var keyLength = stringToNumber(scanner.Text())
-			key = generateRandomKey(keyLength)
-			encrypted += decimalTobase95(len(key))
+			encrypted += string(generateRandomOddChar())
+			key = generateRandomKey(spaceOrSecurity)
 		} else {
-			exitMessage("Invalid input")
+			exitMessage("Invalid Input")
 		}
+		encrypted += decimalTobase95(len(key))
+		test := ""
 		for i := 0; i < len(key); i++ {
 			ascii_value := int(key[i])
-			ascii_str := fmt.Sprint(decimalTobase95(ascii_value * 17))
+			ascii_str := ""
+			if saveSpace {
+				ascii_str = decimalTobase95(ascii_value)
+			} else {
+				ascii_str = decimalTobase95(ascii_value * 17)
+			}
+			test += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 			encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
 		}
 
@@ -199,15 +223,16 @@ func main() {
 			fmt.Println("File not found")
 		}
 
-		password := int(file[0])%2 == 0
+		saveSpace := int(file[0])%2 == 1
+		password := int(file[1])%2 == 0
 
 		var key, temp, passwordStr = "", "", ""
-		var j, i, passwordLen = 0, 1, 10
+		var j, i, passwordLen = 0, 2, 10
 
-		passwordLen = base95ToDecimal(string(file[1]))
+		passwordLen = base95ToDecimal(string(file[i]))
 		i++
 		for ; j < passwordLen; j++ {
-			ind, err := strconv.Atoi(string(rune(file[i])))
+			ind, _ := strconv.Atoi(string(rune(file[i])))
 			if err != nil {
 				exitMessage("Invalid Decryption Format")
 			}
@@ -218,7 +243,11 @@ func main() {
 				temp += string(rune(file[i]))
 			}
 			n := base95ToDecimal(reverse(temp))
-			key += string(rune((n / 17)))
+			if saveSpace {
+				key += string(rune((n)))
+			} else {
+				key += string(rune((n / 17)))
+			}
 			i++
 		}
 
