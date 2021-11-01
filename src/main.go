@@ -119,6 +119,49 @@ func stringToNumber(str string) int {
 	return num
 }
 
+func encryptText(key string, saveSpace bool, file []byte) string {
+	text := decimalTobase95(len(key))
+	test := ""
+	for i := 0; i < len(key); i++ {
+		ascii_value := int(key[i])
+		ascii_str := ""
+		if saveSpace {
+			ascii_str = decimalTobase95(ascii_value)
+		} else {
+			ascii_str = decimalTobase95(ascii_value * 17)
+		}
+		test += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
+		text += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
+	}
+
+	//  Encrypt Main Document
+	for i := 0; i < len(file); i++ {
+		ascii_value := int(key[i%len(key)])
+		encrypted_str := fmt.Sprint(decimalTobase95(ascii_value * int(file[i])))
+		text += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
+	}
+	return text
+}
+
+func decryptText(file []byte, i int, key string) string {
+	text, temp := "", ""
+	j := 0
+	for i < len(file) {
+		ind, _ := strconv.Atoi(string(rune(file[i])))
+		for ; ind > 0; ind-- {
+			i++
+			temp += string(rune(file[i]))
+		}
+		n := base95ToDecimal(reverse(temp))
+		key_value := int(key[j])
+		text += string(rune(n / key_value))
+		j = (j + 1) % len(key)
+		temp = ""
+		i++
+	}
+	return text
+}
+
 func main() {
 	fmt.Print("Enter 1 for encryption or 2 for decryption : ")
 	var num int
@@ -182,26 +225,8 @@ func main() {
 		} else {
 			exitMessage("Invalid Input")
 		}
-		encrypted += decimalTobase95(len(key))
-		test := ""
-		for i := 0; i < len(key); i++ {
-			ascii_value := int(key[i])
-			ascii_str := ""
-			if saveSpace {
-				ascii_str = decimalTobase95(ascii_value)
-			} else {
-				ascii_str = decimalTobase95(ascii_value * 17)
-			}
-			test += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
-			encrypted += fmt.Sprint(len(ascii_str)) + reverse(ascii_str)
-		}
 
-		//  Encrypt Main Document
-		for i := 0; i < len(file); i++ {
-			ascii_value := int(key[i%len(key)])
-			encrypted_str := fmt.Sprint(decimalTobase95(ascii_value * int(file[i])))
-			encrypted += fmt.Sprint(len(encrypted_str)) + reverse(encrypted_str)
-		}
+		encrypted += encryptText(key, saveSpace, file)
 
 		os.WriteFile(fileName, []byte(encrypted), 0644)
 		if !password {
@@ -264,21 +289,7 @@ func main() {
 		}
 
 		// Decrypt Main Document
-		text, temp := "", ""
-		j = 0
-		for i < len(file) {
-			ind, _ := strconv.Atoi(string(rune(file[i])))
-			for ; ind > 0; ind-- {
-				i++
-				temp += string(rune(file[i]))
-			}
-			n := base95ToDecimal(reverse(temp))
-			key_value := int(key[j])
-			text += string(rune(n / key_value))
-			j = (j + 1) % len(key)
-			temp = ""
-			i++
-		}
+		text := decryptText(file, i, key)
 
 		os.WriteFile(fileName, []byte(text), 0644)
 		if password {
